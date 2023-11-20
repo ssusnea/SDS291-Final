@@ -1,0 +1,80 @@
+---
+title: "Summary Stats"
+author: "Sarah Susnea"
+format: pdf
+---
+
+```{r}
+# this was some insane data wrangling LOLLLL. but it worked! 
+library(tidyverse)
+
+# reading the csv:
+regents <- read.csv("regents_scores.csv")
+df <- read.csv("2017_2018_SchoolQualityReport.csv")
+test_df <- read.csv("2017-2018_NotHighschool.csv")
+
+# this could also work... if we filtered? 
+
+test_filter <- test_df |> 
+  filter(School.Type == "Middle")
+# if we filter only for middle schools then this still gives us sufficient information. 
+
+# Selecting only the relevant variables: 
+final_df <- df |> 
+  select(DBN, School.Name, School.Type, Enrollment, Average.Grade.8.English.Proficiency, Percent.of.teachers.with.3.or.more.years.of.experience, Percent.of.Students.Chronically.Absent, Rigorous.Instruction...Percent.Positive, Supportive.Environment.Rating, Average.Grade.8.Math.Proficiency)
+
+real_final_df <- df |> 
+  select(DBN, School.Name, School.Type, Enrollment, Percent.of.teachers.with.3.or.more.years.of.experience, Percent.of.Students.Chronically.Absent, Rigorous.Instruction...Percent.Positive, Supportive.Environment.Rating)
+
+colnames(real_final_df)[1] <- c("School.DBN")
+
+# filtering the regents data set 
+regents_edit <- regents |> 
+  select(2:10) |>
+  filter(School.Level == "High school", Year == "2018", School.Type == "General Academic")
+
+# now lets create a version of this where we only look at common core algebra2 and english regents
+
+algebra2 <- regents_edit |> 
+  filter(Regents.Exam == "Common Core Algebra2" | Regents.Exam == "Common Core English")
+
+
+# now trying to turn scores into their own things: 
+trial <- algebra2 |> 
+  pivot_wider(names_from = Regents.Exam,
+              values_from = Mean.Score)
+
+# changing the names to work for programming: 
+colnames(trial)[8:9] <- c("Mean.Algebra2", "Mean.English")
+  
+# this worked but the problem now is that there are alternating NA values for the two columns on test scores because some of those became the math scores. so we need to remove the NA values in math and English while keeping the schools. BASICALLY instead of there being one school twice (two rows) we need there to be one row for each school.
+
+# wait i have an idea: 
+
+t_alg2 <- trial |> 
+  select(!9) |>
+  filter(Mean.Algebra2 != "s" & !is.na(Mean.Algebra2))
+
+t_english <- trial |> 
+  select(School.DBN, Mean.English) |>
+  filter(Mean.English != "s" & !is.na(Mean.English))
+
+# it seems like fewer schools test algebra 2 than they do english, so let's join on ID number to make sure that we include all of the schools in algebra 2
+
+final_test <- left_join(x = t_alg2, y = t_english, by = "School.DBN")
+# this worked!!!!!
+
+# now let's see how it will go to get the final product 
+
+scores <- final_test |> 
+  select(School.DBN, Mean.Algebra2, Mean.English)
+
+# joining with the school reports: 
+
+FINAL <- left_join(x = scores, y = real_final_df, by = "School.DBN")
+```
+in the end we are left with a table that contains all of the data we are interested in and the average regents scores for linear algebra and english, both of which are standardized test that a student would take in the 11th grade in New York State. We are also left with just over 200 observations which is a little small but I think fine and reasonable. 
+
+So this data set should work for the project without having to uproot anything major in terms of literature or even general question
+
+The only thing that changed now is that we are merging two data sets, one on regents scores and another on school performance evaluation. this creates a data set that we can use to answer our question better
