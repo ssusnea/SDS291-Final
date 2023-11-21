@@ -3,10 +3,14 @@ title: "Initial Data Wrangling"
 format: pdf
 ---
 
-```{r}
+```{r, include = FALSE}
 # loading packages
 library(tidyverse)
+library(stargazer)
+```
 
+
+```{r, include = FALSE}
 # reading the csv:
 RegentsExams <- read.csv("regents_scores.csv")
 SchoolQualityReport <- read.csv("2017_2018_SchoolQualityReport.csv")
@@ -63,9 +67,21 @@ Scores <- FinalRegents |>
 # left joining by School.DBN to get the ultimate real final data frame we want to work with: 
 
 FinalData <- left_join(x = Scores, y = SchoolQuality_Selected, by = "School.DBN")
+
+# The test score columns were character vectors so we needed to coerce them to numeric vectors.
+FinalData$Mean.Algebra2 <- as.numeric(FinalData$Mean.Algebra2)
+FinalData$Mean.English <- as.numeric(FinalData$Mean.English)
 ```
 in the end we are left with a table that contains all of the data we are interested in and the average regents scores for linear algebra and english, both of which are standardized test that a student would take in the 11th grade in New York State. We are also left with just over 200 observations which is a little small but I think fine and reasonable. 
 
 So this data set should work for the project without having to uproot anything major in terms of literature or even general question
 
 The only thing that changed now is that we are merging two data sets, one on regents scores and another on school performance evaluation. this creates a data set that we can use to answer our question better
+
+```{r summary statistics, echo = FALSE}
+#stargazer(FinalData, title = "Summary Stats for Data", header = FALSE, no.space = TRUE, float = FALSE)
+## stargazer is not working right now for some reason
+
+summary(FinalData)
+```
+
