@@ -80,6 +80,11 @@ snake <- snakecase::to_snake_case(names)
 colnames(FinalData) <- snake
 ```
 
+Why do some students struggle in school? Numerous researchers have delved into the variables influencing students' performance in math and English literacy, which are found highly correlated [@klemer_relationships_2023]. One important factor could be the teacher’s teaching experience. @ladd_returns_2017 found that middle school teachers’ teaching experiences are positively correlated with students' achievements in math and reading. Another factor is the school's environment, whether supportive or discouraging, could also affect students’ mathematical learning and performance. A comprehensive review of literature spanning 771 studies from 2005 to 2014 found that key factors connecting deprivation to underperformance in math and sciences can be thematically grouped into a deficiency of positive environment and support [@banerjee_systematic_2016]. A more recent study also supported the idea, revealing a significant indirect association between perceived peer discrimination experiences and GPA through behavioral, and cognitive engagements [@griffin_school_2017].
+
+
+
+
 ```{r summary statistics, echo = FALSE, results = "asis"}
 stargazer(FinalData, title = "Summary Stats for Data", header = FALSE, no.space = TRUE, float = FALSE, type = "latex")
 ## stargazer is not working right now for some reason
