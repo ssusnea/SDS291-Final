@@ -80,19 +80,21 @@ snake <- snakecase::to_snake_case(names)
 colnames(FinalData) <- snake
 ```
 
+# Introduction
+
 Why do some students struggle in school? Numerous researchers have delved into the variables influencing students' performance in math and English literacy, which are found highly correlated [@klemer_relationships_2023]. One important factor could be the teacher’s teaching experience. @ladd_returns_2017 found that middle school teachers’ teaching experiences are positively correlated with students' achievements in math and reading. Another factor is the school's environment, whether supportive or discouraging, could also affect students’ mathematical learning and performance. A comprehensive review of literature spanning 771 studies from 2005 to 2014 found that key factors connecting deprivation to underperformance in math and sciences can be thematically grouped into a deficiency of positive environment and support [@banerjee_systematic_2016]. A more recent study also supported the idea, revealing a significant indirect association between perceived peer discrimination experiences and GPA through behavioral, and cognitive engagements [@griffin_school_2017].
 
+Building upon these findings, our aim is to extend this research to high school students and examine whether math test scores and standardized english test scores are significantly associated with the schools’ supportive environment and teachers’ teaching experiences. We want to explore whether math test scores are significantly associated with a school supportive environment and teachers’ teaching experience, after the effects of control variables, such as the percentage of rigorous instruction, and students' absenteeism rates, are accounted for. Subsequently, we want to test whether a similar relationship holds true for standardized English test scores. We first hypothesize that as the schools’ supportive environment and teachers’ teaching experiences(IV) increase, then math scores(DV) will increase.  Hypothesis 2: As the schools’ supportive environment and teachers’ teaching experiences(IV), we also expect English scores(DV) to increase. To test these hypotheses, we will employ a multiple linear regression analysis.
 
+# Methods
 
+The data we are using for this project is collected by the New York City Department of Education and is published on the NYC Open Data portal. Our data is a combination of two data sets, one summarizing the survey responses from the Department of Education’s 2017 - 2018 School Quality Report and a second data set which reports the average Regents Exams scores for each public high school. Our unit of observation for our final data set is a New York City public high school that administered both the Algebra2 Regents and the English Regents in 2018. These high schools were not randomly selected and this data only covers the survey responses administered for one academic year, 2017 - 2018. We are interested in the following variables:  “mean_algebra_2”, “mean_english”, “percent_of_students_chronically_absent”, “percent_of_teachers_with_3_or_more_years_of_experience”, “rigorous_instruction_percent_positive”, and “supportive_environment_rating”. 
 
-```{r summary statistics, echo = FALSE, results = "asis"}
-stargazer(FinalData, title = "Summary Stats for Data", header = FALSE, no.space = TRUE, float = FALSE, type = "latex")
-## stargazer is not working right now for some reason
-```
+We will utilize multiple regression to create two models with two different dependent variables. Our first model will use average math score as the dependent variable with supportive environment rating and teacher experience as our key independent variables and student attendance and rigorous instruction as our control variables. Our second model will use average English score as the dependent variable with supportive environment rating and teacher experience as our key independent variables and student attendance and rigorous instruction as our control variables. The goal of these models is to build off of the research done by @klemer_relationships_2023 by taking a closer look at the effect of the school environment and teacher experience on math and reading test scores. 
 
-```{r}
+```{r, echo = F}
 summary(FinalData)
 ```
 
-
+# Bibliography
 
