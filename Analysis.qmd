@@ -4,3 +4,71 @@ format: pdf
 ---
 
 the first steps for the data analysis
+
+```{r, include = FALSE}
+# reading the csv:
+RegentsExams <- read.csv("regents_scores.csv")
+SchoolQualityReport <- read.csv("2017_2018_SchoolQualityReport.csv")
+
+
+# selecting the relevant variables from this data set.
+SchoolQuality_Selected <- SchoolQualityReport |> 
+  select(DBN, School.Name, Percent.of.teachers.with.3.or.more.years.of.experience, Percent.of.Students.Chronically.Absent, Rigorous.Instruction...Percent.Positive, Supportive.Environment.Rating)
+
+# changing one column name to make it easier to left join later
+colnames(SchoolQuality_Selected)[1] <- c("School.DBN")
+
+# filtering the RegentsExams data set 
+RegentsEdited <- RegentsExams |> 
+  select(2:10) |>
+  filter(School.Level == "High school", Year == "2018", School.Type == "General Academic")
+
+# filtering for only the two tests we are interested in
+RegentsEdited <- RegentsEdited |> 
+  filter(Regents.Exam == "Common Core Algebra2" | Regents.Exam == "Common Core English")
+
+
+# creating two new rows, one for the english scores one for the math scores
+RegentsEdited <- RegentsEdited |> 
+  pivot_wider(names_from = Regents.Exam,
+              values_from = Mean.Score)
+
+# changing the names to work for programming: 
+colnames(RegentsEdited)[8:9] <- c("Mean.Algebra2", "Mean.English")
+  
+# this worked but the problem now is that there are alternating NA values for the two columns on test scores because some of those became the math scores. so we need to remove the NA values in math and English while keeping the schools. BASICALLY instead of there being one school twice (two rows) we need there to be one row for each school.
+
+# creating a data frame that only contains Algebra2 observations
+
+Algebra2 <- RegentsEdited |> 
+  select(!9) |>
+  filter(Mean.Algebra2 != "s" & !is.na(Mean.Algebra2))
+
+English <- RegentsEdited |> 
+  select(School.DBN, Mean.English) |>
+  filter(Mean.English != "s" & !is.na(Mean.English))
+
+# there are fewer observations for algebra 2 than there are for English, so I want to left join on algebra 2 to keep all of those observations
+
+FinalRegents <- left_join(x = Algebra2, y = English, by = "School.DBN")
+# now I have a working data frame for the exam scores. 
+
+# next step is to transform this into our final working project by joining this data frame with the first data frame
+
+# selecting only the minimum columns we are interested in
+Scores <- FinalRegents |> 
+  select(School.DBN, Mean.Algebra2, Mean.English)
+
+# left joining by School.DBN to get the ultimate real final data frame we want to work with: 
+
+FinalData <- left_join(x = Scores, y = SchoolQuality_Selected, by = "School.DBN")
+
+# The test score columns were character vectors so we needed to coerce them to numeric vectors.
+FinalData$Mean.Algebra2 <- as.numeric(FinalData$Mean.Algebra2)
+FinalData$Mean.English <- as.numeric(FinalData$Mean.English)
+
+# need to re-code the column names 
+names <- names(FinalData)
+snake <- snakecase::to_snake_case(names)
+colnames(FinalData) <- snake
+```
