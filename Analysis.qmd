@@ -1,0 +1,6 @@
+---
+title: "Analysis"
+format: pdf
+---
+
+the first steps for the data analysis
