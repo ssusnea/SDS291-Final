@@ -8,6 +8,7 @@ the first steps for the data analysis
 # loading packages
 library(tidyverse)
 library(stargazer)
+library(car)
 ```
 
 
@@ -91,5 +92,20 @@ summary(lm_english)
 lm_math <- lm(mean_algebra_2 ~ percent_of_teachers_with_3_or_more_years_of_experience + percent_of_students_chronically_absent + rigorous_instruction_percent_positive + supportive_environment_rating, data = FinalData)
 
 summary(lm_math)
+```
+
+### checking conditions: 
+```{r}
+plot(lm_english, which = 1)
+plot(lm_english, which = 2)
+vif(lm_english)
+```
+
+```{r}
+plot(lm_math, which = 1)
+plot(lm_math, which = 2)
+vif(lm_math)
+
+cor(FinalData[,2:3])
 ```
 
