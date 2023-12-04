@@ -78,3 +78,18 @@ names <- names(FinalData)
 snake <- snakecase::to_snake_case(names)
 colnames(FinalData) <- snake
 ```
+
+
+### inital investigation: 
+```{r}
+lm_english <- lm(mean_english ~ percent_of_teachers_with_3_or_more_years_of_experience + percent_of_students_chronically_absent + rigorous_instruction_percent_positive + supportive_environment_rating, data = FinalData)
+
+summary(lm_english)
+```
+
+```{r}
+lm_math <- lm(mean_algebra_2 ~ percent_of_teachers_with_3_or_more_years_of_experience + percent_of_students_chronically_absent + rigorous_instruction_percent_positive + supportive_environment_rating, data = FinalData)
+
+summary(lm_math)
+```
+
