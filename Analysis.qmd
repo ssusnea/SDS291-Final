@@ -86,13 +86,13 @@ colnames(FinalData) <- renamed
 
 ### inital investigation: 
 ```{r}
-lm_english <- lm(mean_english ~ percent_of_teachers_with_3_or_more_years_of_experience + percent_of_students_chronically_absent + rigorous_instruction_percent_positive + supportive_environment_rating, data = FinalData)
+lm_english <- lm(mean_english ~ teacher_experience + chronically_absent + rigorous_instruction + supportive_environment, data = FinalData)
 
 summary(lm_english)
 ```
 
 ```{r}
-lm_math <- lm(mean_algebra_2 ~ percent_of_teachers_with_3_or_more_years_of_experience + percent_of_students_chronically_absent + rigorous_instruction_percent_positive + supportive_environment_rating, data = FinalData)
+lm_math <- lm(mean_algebra2 ~ teacher_experience + chronically_absent + rigorous_instruction + supportive_environment, data = FinalData)
 
 summary(lm_math)
 ```
@@ -110,5 +110,22 @@ plot(lm_math, which = 2)
 vif(lm_math)
 
 cor(FinalData[,2:3])
+```
+
+## checking individual variables: 
+```{r}
+ggplot(data = FinalData, aes(x = teacher_experience)) + geom_histogram() +ggtitle("teacher experience")
+
+ggplot(data = FinalData, aes(x = log(teacher_experience))) + geom_histogram() +ggtitle("teacher experience logged")
+
+ggplot(data = FinalData, aes(x = chronically_absent)) + geom_histogram() +ggtitle("chronically absent")
+
+ggplot(data = FinalData, aes(x = log(chronically_absent))) + geom_histogram() +ggtitle("chronically absent logged")
+
+# why is log transforming making all of these so skewed? 
+
+ggplot(data = FinalData, aes(x = chronically_absent, y = mean_english)) + geom_point() + geom_smooth()
+ggplot(data = FinalData, aes(x = teacher_experience, y = mean_english)) + geom_point() + geom_smooth()
+ggplot(data = FinalData, aes(x = rigorous_instruction, y = mean_english)) + geom_point() + geom_smooth()
 ```
 
