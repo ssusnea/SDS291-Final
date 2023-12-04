@@ -78,6 +78,9 @@ FinalData$Mean.English <- as.numeric(FinalData$Mean.English)
 names <- names(FinalData)
 snake <- snakecase::to_snake_case(names)
 colnames(FinalData) <- snake
+
+renamed <- c("school_dbn", "mean_algebra2", "mean_english", "school_name", "teacher_experience", "chronically_absent", "rigorous_instruction", "supportive_environment")
+colnames(FinalData) <- renamed
 ```
 
 
