@@ -4,6 +4,12 @@ format: pdf
 ---
 
 the first steps for the data analysis
+```{r, include = FALSE}
+# loading packages
+library(tidyverse)
+library(stargazer)
+```
+
 
 ```{r, include = FALSE}
 # reading the csv:
