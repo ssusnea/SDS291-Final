@@ -94,7 +94,14 @@ We will utilize multiple regression to create two models with two different depe
 
 ```{r, echo = F}
 summary(FinalData)
+
+model <- lm(mean_algebra_2 ~ mean_english, data = FinalData)
 ```
 
 # Bibliography
+
+
+```{r}
+stargazer(model)
+```
 
