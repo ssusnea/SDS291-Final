@@ -128,6 +128,8 @@ ggplot(data = FinalData, aes(x = chronically_absent, y = mean_english)) + geom_p
 ggplot(data = FinalData, aes(x = teacher_experience, y = mean_english)) + geom_point() + geom_smooth()
 ggplot(data = FinalData, aes(x = rigorous_instruction, y = mean_english)) + geom_point() + geom_smooth()
 ```
+
+### notes from office hours: 
 general note we probably have an omitted variable in this model and that might be why r is attributing so much of the variation to the attendance var. 
 
 all of the condition check stuff goes in the appendix just like the case study 
@@ -137,13 +139,12 @@ key var, model approach, present model, interpret,
 
 finally draw conclusions 
 
-
 FORMATTED REGRESSION TABLE AND some presentation of model, could use predict() to construct fake data set. 
 
-predicted interval plot can be used for other types of regression!!! not just logistics. with prediction intervals. 
+predicted interval plot can be used for other types of regression!!! not just logistics, use prediction intervals instead. 
 
 don't need to interpret the intercept, just focus on the estimates. 
 
 the appendix is the massive chunk with comments included. 
 
-set it to eval = FALSE that chunk
+set it to eval = FALSE for the appendix chunk
