@@ -9,6 +9,7 @@ bibliography: citations.bib
 # loading packages
 library(tidyverse)
 library(stargazer)
+library(rio)
 ```
 
 
@@ -99,9 +100,4 @@ model <- lm(mean_algebra_2 ~ mean_english, data = FinalData)
 ```
 
 # Bibliography
-
-
-```{r}
-stargazer(model)
-```
 
