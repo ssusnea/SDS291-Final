@@ -150,7 +150,11 @@ make prediction plot for chronically absent, one for each model. USE what was st
 cleaned <- FinalData |>
   filter(!is.na(teacher_experience))
 
-pred_dataenglish <- with(cleaned, data.frame(teacher_experience = mean(teacher_experience), chronically_absent = seq(from = 0, to = .75, by = 0.025), rigorous_instruction = mean(rigorous_instruction), supportive_environment = "Meeting Target"))
+pred_dataenglish <- with(cleaned, 
+                         data.frame(teacher_experience = mean(teacher_experience),
+                                    chronically_absent = seq(from = 0, to = .75, by = 0.025),
+                                    rigorous_instruction = mean(rigorous_instruction),
+                                    supportive_environment = "Meeting Target"))
 
 # generating predictions: 
 predictions_eng <- as.data.frame(predict(lm_english, pred_dataenglish, type = "response", se.fit = TRUE))
@@ -161,13 +165,17 @@ pred_dataenglish$pred_lower <- predictions_eng$fit-(1.96*predictions_eng$se.fit)
 pred_dataenglish$pred_upper <- predictions_eng$fit+(1.96*predictions_eng$se.fit)
 
 ggplot(data = pred_dataenglish, aes(x = chronically_absent, y = pred_prob)) +
-  geom_ribbon(aes(ymin = pred_lower, ymax = pred_upper),fill = "grey70", alpha = 0.75) +
+  geom_ribbon(aes(ymin = pred_lower, ymax = pred_upper), fill = "grey70", alpha = 0.75) +
   geom_line()
 ```
 
 ```{r}
 # making predictions for math lm 
-pred_datamath <- with(cleaned, data.frame(teacher_experience = mean(teacher_experience), chronically_absent = seq(from = 0, to = .75, by = 0.025), rigorous_instruction = mean(rigorous_instruction), supportive_environment = "Meeting Target"))
+pred_datamath <- with(cleaned, 
+                      data.frame(teacher_experience = mean(teacher_experience),
+                                 chronically_absent = seq(from = 0, to = .75, by = 0.025),
+                                 rigorous_instruction = mean(rigorous_instruction),
+                                 supportive_environment = "Meeting Target"))
 
 # generating predictions: 
 predictions_mth <- as.data.frame(predict(lm_math, pred_datamath, type = "response", se.fit = TRUE))
@@ -182,17 +190,52 @@ ggplot(data = pred_datamath, aes(x = chronically_absent, y = pred_prob)) +
   geom_line()
 ```
 
+```{r, results='asis'}
+stargazer(lm_math, 
+          type = "latex", 
+          header = F, 
+          float = F)
+```
+
+```{r}
+summary(lm_math)
+```
+**actual interpretation for math:**
+
+From the model predicting a school's average 2018 Algebra 2 Regents score, two statistically significant variables emerge as predictors of math test scores for a school. First, as hypothesized, teachers' teaching experience is positively associated with high school students' math scores. This implies that as teachers' experience increases, students' math scores also increase. However, the school's supportive environment, the other variable mentioned in our initial hypothesis, did not exhibit statistical significance in this model. We failed to provide evidence for an association between the school's supportive environment and students' math scores. Nevertheless, the coefficient for the control variable "chronic absence" is statistically significant. There is a negative association between chronic absence and students' math scores, indicating that as students' absences increase, their math scores decrease.
+
+The adjusted $R^2$ for this model is 46.5%, signifying that the model explains a moderate proportion of the variability in students' math scores, leaving room for improvement. The model's F-statistic is also statistically significant, indicating that it successfully reduces the unexplained variation in students' math scores by incorporating four different variables.
+
+While this model validates half of our initial hypothesis by confirming a significant association between math test scores and teachers' teaching experiences, it falls short in supporting a positive relationship between math scores and schools' supportive environment.
+
+
 ?????
 
 ```{r, results='asis'}
-stargazer(lm_english, title = "Modeling Variables on English Test Score", covariate.lables = c("Teacher Experience", "Percent of Chronically Absent Students", "Rigorous Instruction",  "Approaching Supportive Environment Target", "Exceeding Supportive Environment Target", "Meeting Supportive Environment Target",  "Not Meeting Supportive Environment Target", "Intercept"), type = "latex", header = F, float = F)
+stargazer(lm_math, lm_english,
+          type = "latex", 
+          header = F, 
+          float = F)
 ```
+
 ```{r}
 summary(lm_english)
 ```
-**actual interpretation:**
+**actual interpretation for english:**
 
-For our model predicting a school's average 2018 English Regents score we noticed that only the coefficient estimate for chronic absence was statistically significant as well as negatively associated with average english test score for a school. This is to say as the percentage of a school's student body that is chronically absent increases, the schools' average test score for the 2018 English Regents decreases. All of the other predictors we included in this model were not statistically significant and as such our initial hypothesis that average english test scores have a positive relationship with teacher experience and a school's supportive environment was not supported by this model. Although our model did not support our hypothesis, it did a fairly good job at explaining the variation in our dependent variable, producing an adjusted $R^2$ of $55.75$%. Additionally this model's F-stat was statistically significant meaning this model has explanatory power and told us something about our dependent variable. Although our model did not provide us with the evidence necessary to support our hypothesis, we discovered that chronic absence is an important predictor when modeling english score performance. This leads us to conclude that maybe just getting students to come to school is the first and most important step for their success. 
+For our model predicting a school's average 2018 English Regents score we noticed that only the coefficient estimate for chronic absence was statistically significant as well as negatively associated with average english test score for a school. This is to say as the percentage of a school's student body that is chronically absent increases, the schools' average test score for the 2018 English Regents decreases. All of the other predictors we included in this model were not statistically significant and as such our initial hypothesis that average english test scores have a positive relationship with teacher experience and a school's supportive environment was not supported by this model. 
+
+Although our model did not support our hypothesis, it did a fairly good job at explaining the variation in our dependent variable, producing an adjusted $R^2$ of $55.75$%. Additionally this model's F-stat was statistically significant meaning this model has explanatory power and told us something about our dependent variable. Although our model did not provide us with the evidence necessary to support our hypothesis, we discovered that chronic absence is an important predictor when modeling english score performance. This leads us to conclude that maybe just getting students to come to school is the first and most important step for their success. 
 
 
 **Note:** for both models we may want to mention that there's some omitted variable bias coming into play here which makes chronic absence statistically significant. There's definitely a socioeconomic factor that we did not include in our models that has a significant effect on test scores, but because that predictor is missing from our model, most of the variability gets attributed to chronic absence which can sometimes begin to cover some of the socioeconomic factors that we missed out on in this model. 
+
+
+# Conclusion
+For this study, we would like to see whether math test scores and English score are significantly associated with a school supportive environment and teachers' teaching experience, the percentage of rigorous instruction, and students' absenteeism rates. 
+
+We analyze our results by conducting an multiple regression test. In our initial model, where the dependent variable is the English score, we fail to reject the null hypothesis for all independent variables except the factor of chronic absenteeism. This indicates there is a significant relationship between the average English scores in schools and the percentage of students experiencing chronic absenteeism.
+
+Moving on to the second model, with the math score as the dependent variable, we fail to reject the null hypothesis for teacher experience and the supportive environment factor. However, we reject the null hypothesis for rigorous instruction and chronic absenteeism, indicating that there is a relationship between average math score and chronic absenteeism and rigorous teaching. We conclude that the chronically absent factor is statistically significant across both models.
+
+Since we also fail to pass the regression condition first, we need to be very cautious about making any causal inference based on this result since the result is not technically valid. This problem can be addressed by the possibility to collect more data, and be more careful in selecting predictors factors. By making these adjustments, we can enhance the quality of our research and increase the accuracy of our findings.
