@@ -165,8 +165,12 @@ pred_dataenglish$pred_lower <- predictions_eng$fit-(1.96*predictions_eng$se.fit)
 pred_dataenglish$pred_upper <- predictions_eng$fit+(1.96*predictions_eng$se.fit)
 
 ggplot(data = pred_dataenglish, aes(x = chronically_absent, y = pred_prob)) +
-  geom_ribbon(aes(ymin = pred_lower, ymax = pred_upper), fill = "grey70", alpha = 0.75) +
-  geom_line()
+  geom_ribbon(aes(ymin = pred_lower, ymax = pred_upper), fill = "red", alpha = 0.50) +
+  geom_line() + 
+  labs(title = "Average English Regents Score vs. Chronic Absence Rates", 
+       x = "Chronic Absence Rate", 
+       y = "Average English Regents Score") +
+  theme_minimal()
 ```
 
 ```{r}
@@ -186,8 +190,12 @@ pred_datamath$pred_lower <- predictions_mth$fit-(1.96*predictions_mth$se.fit)
 pred_datamath$pred_upper <- predictions_mth$fit+(1.96*predictions_mth$se.fit)
 
 ggplot(data = pred_datamath, aes(x = chronically_absent, y = pred_prob)) +
-  geom_ribbon(aes(ymin = pred_lower, ymax = pred_upper),fill = "grey70", alpha = 0.75) +
-  geom_line()
+  geom_ribbon(aes(ymin = pred_lower, ymax = pred_upper),fill = "blue", alpha = 0.50) +
+  geom_line() + 
+  labs(title = "Average Algebra 2 Regents Score vs. Chronic Absence Rates", 
+       x = "Chronic Absence Rate", 
+       y = "Average Algebra 2 Regents Score") +
+  theme_minimal()
 ```
 
 ```{r, results='asis'}
