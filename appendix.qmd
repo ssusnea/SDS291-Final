@@ -231,12 +231,9 @@ summary(lm_english)
 ```
 **actual interpretation for english:**
 
-For our model predicting a school's average 2018 English Regents score we noticed that only the coefficient estimate for chronic absence was statistically significant as well as negatively associated with average english test score for a school. This is to say as the percentage of a school's student body that is chronically absent increases, the schools' average test score for the 2018 English Regents decreases. All of the other predictors we included in this model were not statistically significant and as such our initial hypothesis that average english test scores have a positive relationship with teacher experience and a school's supportive environment was not supported by this model. 
+For our model predicting a school's average 2018 English Regents score only the coefficient estimate for chronic absenteeism was statistically significant and negatively associated with the dependent variable. As the percentage of chronic absenteeism within a student body increases, a school's average score for the 2018 English Regents decreases. The other predictors included in this model were not statistically significant so our initial hypothesis that average English test scores have a relationship with teacher experience and a school's supportive environment was not supported by this model.
 
-Although our model did not support our hypothesis, it did a fairly good job at explaining the variation in our dependent variable, producing an adjusted $R^2$ of $55.75$%. Additionally this model's F-stat was statistically significant meaning this model has explanatory power and told us something about our dependent variable. Although our model did not provide us with the evidence necessary to support our hypothesis, we discovered that chronic absence is an important predictor when modeling english score performance. This leads us to conclude that maybe just getting students to come to school is the first and most important step for their success. 
-
-
-**Note:** for both models we may want to mention that there's some omitted variable bias coming into play here which makes chronic absence statistically significant. There's definitely a socioeconomic factor that we did not include in our models that has a significant effect on test scores, but because that predictor is missing from our model, most of the variability gets attributed to chronic absence which can sometimes begin to cover some of the socioeconomic factors that we missed out on in this model. 
+Although our model did not support our hypothesis, it was moderately successful at explaining the variation in our dependent variable, producing an adjusted $R^2$ of $55.75$%. Additionally this model's F-stat was statistically significant meaning this model has explanatory power and managed to reduce the unexplained variability of our dependent variable. 
 
 
 # Conclusion
