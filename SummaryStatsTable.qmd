@@ -102,6 +102,6 @@ model <- lm(mean_algebra_2 ~ mean_english, data = FinalData)
 # Bibliography
 
 ```{r, results='asis'}
-stargazer(as.data.frame(FinalData), type = "latex")?
+stargazer(as.data.frame(FinalData), type = "latex")
 ```
 
