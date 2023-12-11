@@ -249,3 +249,8 @@ In our research, we selected only four variables as predictor variables, omittin
 Furthermore, it's essential to note that we combined two distinct data sets, since our first data set only included students' exam scores from before entering high school. This merging of data sets introduces potential complexities and nuances that should be acknowledged in interpreting our findings.
 
 Since we also failed to pass the initial regression conditions we need to be very cautious about making any causal inferences based on our results since they are not technically valid. This problem can be addressed in the future by selecting data with more observations, and be more careful when selecting predictors. These adjustments can enhance the quality of our models and increase the accuracy of our findings.
+
+```{r, results="asis"}
+stargazer(lm_english, type = "latex")
+```
+
