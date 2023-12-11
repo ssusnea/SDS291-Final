@@ -144,7 +144,7 @@ stargazer(lm_math, lm_english,
 ```
 
 ## Model 1: Math
-From the model predicting a school's average 2018 Algebra 2 Regents score, two statistically significant variables emerge as predictors of math test scores for a school. First, as hypothesized, teachers' teaching experience is positively associated with high school students' math scores. This implies that as teachers' experience increases, students' math scores also increase (check plot 1 below). However, the school's supportive environment, the other variable mentioned in our initial hypothesis, did not exhibit statistical significance in this model. We failed to provide evidence for an association between the school's supportive environment and students' math scores. Nevertheless, the coefficient for the control variable "chronic absence" is statistically significant. There is a negative association between chronic absence and students' math scores, indicating that as students' absences increase, their math scores decrease (check plot 2 below).
+From the model predicting a school's average 2018 Algebra 2 Regents score, two statistically significant variables emerge as predictors of math test scores for a school. First, as hypothesized, teachers' teaching experience is positively associated with high school students' math scores. This implies that as teachers' experience increases, students' math scores also increase (see @fig-plot1 (a)). However, the school's supportive environment, the other variable mentioned in our initial hypothesis, did not exhibit statistical significance in this model. We failed to provide evidence for an association between the school's supportive environment and students' math scores. Nevertheless, the coefficient for the control variable "chronic absence" is statistically significant. There is a negative association between chronic absence and students' math scores, indicating that as students' absences increase, their math scores decrease (see @fig-plot1 (b)).
 
 The adjusted $R^2$ for this model is 46.5%, signifying that the model explains a moderate proportion of the variability in students' math scores, leaving room for improvement. The model's F-statistic is also statistically significant, indicating that it successfully reduces the unexplained variation in students' math scores by incorporating four different variables.
 
@@ -173,12 +173,12 @@ pred_datamath_teacherexp$pred_upper <- predictions_mth_teacherexp$fit+(1.96*pred
 
 ```{r, echo=FALSE}
 # plot for math vs. teacher experience
-ggplot(data = pred_datamath_teacherexp, aes(x = teacher_experience, y = pred_prob)) +
+plot1 <- ggplot(data = pred_datamath_teacherexp, aes(x = teacher_experience, y = pred_prob)) +
   geom_ribbon(aes(ymin = pred_lower, ymax = pred_upper), fill = "blue", alpha = 0.50) +
   geom_line() +
-  labs(title = "Plot 1: Teachers Experience vs. Math Score",
-       x = "Percentage of Teacher With 3+ Year Experience",
-       y = "Average Algebra 2 Regents Score") +
+  labs(title = "Teachers' Experiences vs. Math Scores",
+       x = "Percentage of Teacher With 3+ Year Experiences",
+       y = "Average Algebra 2 Regents Scores") +
   theme_minimal()
 ```
 
@@ -201,18 +201,26 @@ pred_datamath_absence$pred_upper <- predictions_mth_absence$fit+(1.96*prediction
 
 ```{r, echo=FALSE}
 # plot for math vs. chronically absent
-ggplot(data = pred_datamath_absence, aes(x = chronically_absent, y = pred_prob)) +
+plot2 <- ggplot(data = pred_datamath_absence, aes(x = chronically_absent, y = pred_prob)) +
   geom_ribbon(aes(ymin = pred_lower, ymax = pred_upper), fill = "blue", alpha = 0.50) +
   geom_line() +
-  labs(title = "Plot 2: Chronic Absence Rate vs. Math Score",
-       x = "Chronic Absence Rate",
-       y = "Average Algebra 2 Regents Score") +
+  labs(title = "Chronic Absence Rates vs. Math Scores",
+       x = "Chronic Absence Rates",
+       y = "Average Algebra 2 Regents Scores") +
   theme_minimal()
 ```
 
+```{r fig-plot1, echo = FALSE, fig.cap='Model 1 Predicting 2018 Algebra 2 Regents Score', fig.subcap=c("",""), out.width='.49\\linewidth', fig.asp=1, fig.ncol = 2}
+#| label: fig-plot1
+
+plot1
+plot2
+```
+
+
 
 ## Model 2: English
-For our model predicting a school's average 2018 English Regents score only the coefficient estimate for chronic absenteeism was statistically significant and negatively associated with the dependent variable. As the percentage of chronic absenteeism within a student body increases, a school's average score for the 2018 English Regents decreases (check plot 3 below). The other predictors included in this model were not statistically significant so our initial hypothesis that average English test scores have a relationship with teacher experience and a school's supportive environment was not supported by this model.
+For our model predicting a school's average 2018 English Regents score only the coefficient estimate for chronic absenteeism was statistically significant and negatively associated with the dependent variable. As the percentage of chronic absenteeism within a student body increases, a school's average score for the 2018 English Regents decreases (see @fig-plot2). The other predictors included in this model were not statistically significant so our initial hypothesis that average English test scores have a relationship with teacher experience and a school's supportive environment was not supported by this model.
 
 Although our model did not support our hypothesis, it was moderately successful at explaining the variation in our dependent variable, producing an adjusted $R^2$ of $55.75$%. Additionally this model's F-stat was statistically significant meaning this model has explanatory power and managed to reduce the unexplained variability of our dependent variable. 
 
@@ -234,13 +242,18 @@ pred_dataenglish$pred_upper <- predictions_eng$fit+(1.96*predictions_eng$se.fit)
 ```
 
 ```{r, echo=FALSE}
-ggplot(data = pred_dataenglish, aes(x = chronically_absent, y = pred_prob)) +
+#| label: fig-plot2
+#| fig-cap: "Model 2 Predicting 2018 English Regents Score"
+
+plot3 <- ggplot(data = pred_dataenglish, aes(x = chronically_absent, y = pred_prob)) +
   geom_ribbon(aes(ymin = pred_lower, ymax = pred_upper), fill = "red", alpha = 0.50) +
   geom_line() + 
-  labs(title = "Plot 3: Chronic Absence Rate vs. English Score",
-       x = "Chronic Absence Rate",
-       y = "Average English Regents Score") +
+  labs(title = "Chronic Absence Rates vs. English Scores",
+       x = "Chronic Absence Rates",
+       y = "Average English Regents Scores") +
   theme_minimal()
+
+plot3
 ```
 
 
@@ -264,7 +277,8 @@ Since we observed skewed distributions for both our variables and the models' re
 #### CONDITION CHECKS/INITIAL INVESTIGATION FOR ENGLISH MODEL: 
 
 summary(lm_english)
-# for model 1 we noticed that only the intercept and the variable chronically_absent are statistically significant.
+# for model 1 we noticed that only the intercept and the variable
+# chronically_absent are statistically significant.
 
 # condition checks: 
 plot(lm_english, which = 1)
@@ -275,30 +289,39 @@ vif(lm_english)
 ## vif looks fine
 
 #### LOOKING AT INDIVIDUAL VARIABLES (ENGLISH):
-ggplot(data = FinalData, aes(x = chronically_absent, y = mean_english)) + geom_point() + geom_smooth() +
+ggplot(data = FinalData, aes(x = chronically_absent, y = mean_english)) + 
+  geom_point() + geom_smooth() +
   ggtitle("Chronically Absent vs. Mean English")
 
-ggplot(data = FinalData, aes(x = teacher_experience, y = mean_english)) + geom_point() + geom_smooth() +
+ggplot(data = FinalData, aes(x = teacher_experience, y = mean_english)) + 
+  geom_point() + geom_smooth() +
   ggtitle("Teacher Experience vs. Mean English")
 
-ggplot(data = FinalData, aes(x = rigorous_instruction, y = mean_english)) + geom_point() + geom_smooth() +
+ggplot(data = FinalData, aes(x = rigorous_instruction, y = mean_english)) + 
+  geom_point() + geom_smooth() +
   ggtitle("Rigorous Instruction vs. Mean English")
-# chronically absent vs mean english was the only scatter plot to look remotely linear. 
+# chronically absent vs mean english was the only scatter plot to look remotely
+# linear.
 
 # wanted to see if transforming data would fix anything: 
-ggplot(data = FinalData, aes(x = log(chronically_absent), y = mean_english)) + geom_point() + geom_smooth() +
+ggplot(data = FinalData, aes(x = log(chronically_absent), y = mean_english)) + 
+  geom_point() + geom_smooth() +
   ggtitle("Log Chronically Absent vs. Mean English")
-ggplot(data = FinalData, aes(x = log(teacher_experience), y = mean_english)) + geom_point() + geom_smooth() +
+ggplot(data = FinalData, aes(x = log(teacher_experience), y = mean_english)) + 
+  geom_point() + geom_smooth() +
   ggtitle("Log Teacher Experience vs. Mean English")
-ggplot(data = FinalData, aes(x = log(rigorous_instruction), y = mean_english)) + geom_point() + geom_smooth() +
+ggplot(data = FinalData, aes(x = log(rigorous_instruction), y = mean_english)) + 
+  geom_point() + geom_smooth() +
   ggtitle("Log Rigorous Instruction vs. Mean English")
-# noticed that applying log to the variables only makes them more skewed, so we kept variables unchanged. 
+# noticed that applying log to the variables only makes them more skewed, so we
+# kept variables unchanged.
 
 
 #### CONDITION CHECKS/INITIAL INVESTIGATION FOR MATH MODEL: 
 
 summary(lm_math)
-# for model 2 we noticed that the intercept, teacher_experience, and chronically_absent were statistically significant. 
+# for model 2 we noticed that the intercept, teacher_experience, and
+# chronically_absent were statistically significant.
 
 # condition checks: 
 plot(lm_math, which = 1)
@@ -309,24 +332,34 @@ vif(lm_math)
 ## vif looks fine 
 
 #### LOOKING AT INDIVIDUAL VARIABLES (MATH):
-ggplot(data = FinalData, aes(x = chronically_absent, y = mean_algebra2)) + geom_point() + geom_smooth() +
+ggplot(data = FinalData, aes(x = chronically_absent, y = mean_algebra2)) + 
+  geom_point() + geom_smooth() +
   ggtitle("Chronically Absent vs. Mean Math")
 
-ggplot(data = FinalData, aes(x = teacher_experience, y = mean_algebra2)) + geom_point() + geom_smooth() +
+ggplot(data = FinalData, aes(x = teacher_experience, y = mean_algebra2)) + 
+  geom_point() + geom_smooth() +
   ggtitle("Teacher Experience vs. Mean Math")
 
-ggplot(data = FinalData, aes(x = rigorous_instruction, y = mean_algebra2)) + geom_point() + geom_smooth() +
+ggplot(data = FinalData, aes(x = rigorous_instruction, y = mean_algebra2)) + 
+  geom_point() + geom_smooth() +
   ggtitle("Rigorous Instruction vs. Mean Math")
-# chronically absent vs mean algebra2 was the only scatter plot to look remotely linear. 
+# chronically absent vs mean algebra2 was the only scatter plot to look remotely
+# linear.
 
 # wanted to see if transforming data would fix anything:
-ggplot(data = FinalData, aes(x = log(chronically_absent), y = mean_algebra2)) + geom_point() + geom_smooth() +
+ggplot(data = FinalData, aes(x = log(chronically_absent), y = mean_algebra2)) + 
+  geom_point() + geom_smooth() +
   ggtitle("Log Chronically Absent vs. Mean Math")
-ggplot(data = FinalData, aes(x = log(teacher_experience), y = mean_algebra2)) + geom_point() + geom_smooth() +
+
+ggplot(data = FinalData, aes(x = log(teacher_experience), y = mean_algebra2)) + 
+  geom_point() + geom_smooth() +
   ggtitle("Log Teacher Experience vs. Mean Math")
-ggplot(data = FinalData, aes(x = log(rigorous_instruction), y = mean_algebra2)) + geom_point() + geom_smooth() +
+
+ggplot(data = FinalData, aes(x = log(rigorous_instruction),y = mean_algebra2)) + 
+  geom_point() + geom_smooth() +
   ggtitle("Log Rigorous Instruction vs. Mean Math")
-# noticed that applying log to the variables only makes them more skewed, so we kept variables unchanged. 
+# noticed that applying log to the variables only makes them more skewed, so we
+# kept variables unchanged.
 ```
 
 
