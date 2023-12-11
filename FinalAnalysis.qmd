@@ -66,14 +66,12 @@ English <- RegentsEdited |>
 # joining the math and english exam data sets into final one 
 FinalRegents <- left_join(x = Algebra2, y = English, by = "School.DBN")
 
-# now I have a working data frame for the exam scores. next step is to join the two data sets together to make the final one for analysis
-
 
 # selecting only the minimum columns we are interested in
 Scores <- FinalRegents |> 
   select(School.DBN, Mean.Algebra2, Mean.English)
 
-# left joining by School.DBN to get the ultimate real final data frame we want to work with: 
+# left joining by School.DBN to get the final data frame we want to work with: 
 FinalData <- left_join(x = Scores, y = SchoolQuality_Selected, by = "School.DBN")
 
 # The test score columns were character vectors so we needed to coerce them to numeric vectors.
@@ -105,7 +103,13 @@ We will utilize multiple regression to create two models with two different depe
 
 ```{r, echo=FALSE, results='asis'}
 # create the summary table
-stargazer(as.data.frame(FinalData), type = "latex", header = F, float = F)
+stargazer(as.data.frame(FinalData), type = "latex", 
+          covariate.labels = c("Mean Algebra 2", 
+                               "Mean English", 
+                               "Teacher Experience",
+                               "Chronically Absent",
+                               "Rigorous Instruction"), 
+                               header = F, float = F)
 ```
 
 
@@ -122,8 +126,19 @@ lm_math <- lm(mean_algebra2 ~ teacher_experience + chronically_absent + rigorous
 ```
 
 ```{r, echo=FALSE, results='asis'}
+# creating comparison table for models 
 stargazer(lm_math, lm_english,
           type = "latex", 
+          title = "Comparing Our Models",
+          dep.var.labels = c("Mean Algebra 2 Score", "Mean English Score"), 
+          covariate.labels = c("Teacher Experience", 
+                               "Percent of Chronically Absent Students",
+                               "Rigorous Instruction",
+                               "Approaching Supportive Environment Target",
+                               "Exceeding Supportive Environment Target",
+                               "Meeting Supportive Environment Target",
+                               "Not Meeting Supportive Environment Target",
+                               "Intercept"),
           header = F, 
           float = F)
 ```
@@ -236,7 +251,7 @@ Our analysis does not supports our primary hypothesis. In our initial model, whe
 
 Moving on to the second model, with the schools' average Algebra 2 Regents score as the dependent variable, we failed to reject the null hypothesis for both the. teacher experience and supportive environment predictors. However, we reject the null hypothesis for rigorous instruction and chronic absenteeism, indicating that there is a relationship between a school's average Algebra 2 Regents score and chronic absenteeism and rigorous teaching. We can successfully conclude that the chronically absent factor is statistically significant across both models.
 
-# Limitation
+# Limitations
 In our research, we selected only four variables as predictor variables, omitting consideration of other potential factors such as school race composition and overall school quality that could have an impact on our results. This selective approach may have led to an oversimplification of our sample, as we focused solely on students' performance measured by a school's average Algebra 2 and English Regents scores. 
 
 Furthermore, it's essential to note that we combined two distinct data sets, since our first data set only included students' exam scores from before entering high school. This merging of data sets introduces potential complexities and nuances that should be acknowledged in interpreting our findings.
@@ -244,71 +259,74 @@ Furthermore, it's essential to note that we combined two distinct data sets, sin
 Since we also failed to pass the initial regression conditions we need to be very cautious about making any causal inferences based on our results since they are not technically valid. This problem can be addressed in the future by selecting data with more observations, and be more careful when selecting predictors. These adjustments can enhance the quality of our models and increase the accuracy of our findings.
 
 # Appendix
-See the qmd file for the appendix.
-```{r, eval=FALSE, include=FALSE}
-#### CONDITION CHECKS/INITIAL INVESTIGATION FOR MODEL 1: 
 
-## investigating the english model: 
-# fitting the model: 
-lm_english <- lm(mean_english ~ teacher_experience + chronically_absent + rigorous_instruction + supportive_environment, data = FinalData)
+```{r, eval=FALSE}
+#### CONDITION CHECKS/INITIAL INVESTIGATION FOR ENGLISH MODEL: 
 
 summary(lm_english)
 # for model 1 we noticed that only the intercept and the variable chronically_absent are statistically significant.
 
 # condition checks: 
 plot(lm_english, which = 1)
+## 
 plot(lm_english, which = 2)
+## we noticed that these residuals are not normally distributed 
 vif(lm_english)
-# we noticed that these residuals are not normally distributed 
+# 
 
-#### LOOKING AT INDIVIDUAL VARIABLES (MODEL 1):
+#### LOOKING AT INDIVIDUAL VARIABLES (ENGLISH):
 ggplot(data = FinalData, aes(x = chronically_absent, y = mean_english)) + geom_point() + geom_smooth() +
   ggtitle("Chronically Absent vs. Mean English")
+
 ggplot(data = FinalData, aes(x = teacher_experience, y = mean_english)) + geom_point() + geom_smooth() +
   ggtitle("Teacher Experience vs. Mean English")
+
 ggplot(data = FinalData, aes(x = rigorous_instruction, y = mean_english)) + geom_point() + geom_smooth() +
   ggtitle("Rigorous Instruction vs. Mean English")
 # chronically absent vs mean english was the only scatter plot to look remotely linear. 
 
+# wanted to see if transforming data would fix anything: 
 ggplot(data = FinalData, aes(x = log(chronically_absent), y = mean_english)) + geom_point() + geom_smooth() +
   ggtitle("Log Chronically Absent vs. Mean English")
 ggplot(data = FinalData, aes(x = log(teacher_experience), y = mean_english)) + geom_point() + geom_smooth() +
   ggtitle("Log Teacher Experience vs. Mean English")
 ggplot(data = FinalData, aes(x = log(rigorous_instruction), y = mean_english)) + geom_point() + geom_smooth() +
   ggtitle("Log Rigorous Instruction vs. Mean English")
-# noticed that applying log to the variables didn't fix anything, so we kept variables unchanged. 
+# noticed that applying log to the variables only makes them more skewed, so we kept variables unchanged. 
 
 
-#### CONDITION CHECKS/INITIAL INVESTIGATION FOR MODEL 2: 
-## investigating the math model: 
-# fitting the model: 
-lm_math <- lm(mean_algebra2 ~ teacher_experience + chronically_absent + rigorous_instruction + supportive_environment, data = FinalData)
+#### CONDITION CHECKS/INITIAL INVESTIGATION FOR MATH MODEL: 
 
 summary(lm_math)
 # for model 2 we noticed that the intercept, teacher_experience, and chronically_absent were statistically significant. 
 
 # condition checks: 
 plot(lm_math, which = 1)
+## 
 plot(lm_math, which = 2)
+## we noticed that these residuals are not normally distributed
 vif(lm_math)
-# we noticed that these residuals are not normally distributed 
+## 
 
-#### LOOKING AT INDIVIDUAL VARIABLES (MODEL 2):
+#### LOOKING AT INDIVIDUAL VARIABLES (MATH):
 ggplot(data = FinalData, aes(x = chronically_absent, y = mean_algebra2)) + geom_point() + geom_smooth() +
   ggtitle("Chronically Absent vs. Mean Math")
+
 ggplot(data = FinalData, aes(x = teacher_experience, y = mean_algebra2)) + geom_point() + geom_smooth() +
   ggtitle("Teacher Experience vs. Mean Math")
+
 ggplot(data = FinalData, aes(x = rigorous_instruction, y = mean_algebra2)) + geom_point() + geom_smooth() +
   ggtitle("Rigorous Instruction vs. Mean Math")
 # chronically absent vs mean algebra2 was the only scatter plot to look remotely linear. 
 
+# wanted to see if transforming data would fix anything:
 ggplot(data = FinalData, aes(x = log(chronically_absent), y = mean_algebra2)) + geom_point() + geom_smooth() +
   ggtitle("Log Chronically Absent vs. Mean Math")
 ggplot(data = FinalData, aes(x = log(teacher_experience), y = mean_algebra2)) + geom_point() + geom_smooth() +
   ggtitle("Log Teacher Experience vs. Mean Math")
 ggplot(data = FinalData, aes(x = log(rigorous_instruction), y = mean_algebra2)) + geom_point() + geom_smooth() +
   ggtitle("Log Rigorous Instruction vs. Mean Math")
-# noticed that applying log to the variables didn't fix anything, so we kept variables unchanged. 
+# noticed that applying log to the variables only makes them more skewed, so we kept variables unchanged. 
 ```
 
 
