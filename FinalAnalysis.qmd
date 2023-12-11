@@ -1,8 +1,8 @@
 ---
-title: "AA"
+title: "Investigating the Relationship Between School Environments and Test Scores"
 subtitle: "SDS 291 Final Project"
 author: "Cindy Sun, Sarah Susnea, Elaine Xu"
-date: "December 10, 2023"
+date: "December 20, 2023"
 format: 
   pdf:
     geometry: 
@@ -256,7 +256,7 @@ In our research, we selected only four variables as predictor variables, omittin
 
 Furthermore, it's essential to note that we combined two distinct data sets, since our first data set only included students' exam scores from before entering high school. This merging of data sets introduces potential complexities and nuances that should be acknowledged in interpreting our findings.
 
-Since we also failed to pass the initial regression conditions we need to be very cautious about making any causal inferences based on our results since they are not technically valid. This problem can be addressed in the future by selecting data with more observations, and be more careful when selecting predictors. These adjustments can enhance the quality of our models and increase the accuracy of our findings.
+Since we observed skewed distributions for both our variables and the models' residuals, we need to be very cautious about making any causal inferences based on our results since they are not technically valid. This problem can be addressed in the future by selecting data with more observations, and be more careful when selecting predictors. These adjustments can enhance the quality of our models and increase the accuracy of our findings.
 
 # Appendix
 
@@ -268,11 +268,11 @@ summary(lm_english)
 
 # condition checks: 
 plot(lm_english, which = 1)
-## 
+## the points are generally linear and have equal variance 
 plot(lm_english, which = 2)
-## we noticed that these residuals are not normally distributed 
+## we noticed that these residuals are roughly normally distributed 
 vif(lm_english)
-# 
+## vif looks fine
 
 #### LOOKING AT INDIVIDUAL VARIABLES (ENGLISH):
 ggplot(data = FinalData, aes(x = chronically_absent, y = mean_english)) + geom_point() + geom_smooth() +
@@ -302,11 +302,11 @@ summary(lm_math)
 
 # condition checks: 
 plot(lm_math, which = 1)
-## 
+## these points are generally linear and have equal variance 
 plot(lm_math, which = 2)
-## we noticed that these residuals are not normally distributed
+## this looks roughly normally distributed
 vif(lm_math)
-## 
+## vif looks fine 
 
 #### LOOKING AT INDIVIDUAL VARIABLES (MATH):
 ggplot(data = FinalData, aes(x = chronically_absent, y = mean_algebra2)) + geom_point() + geom_smooth() +
