@@ -14,7 +14,8 @@ bibliography: citations.bib
 ---
 
 # Abstract
-Our paper attempts to uncover the variables that affect a New York City public high school’s performance on the 2018 English and Algebra 2 Regents exams, a standardized test administered by New York State to high school students across the state. By combining two datasets published by the NYC Department of Education we were able to fit two separate models to answer our research question, one model for the average English scores, and a second model for the average Algebra 2 scores. Initially we hypothesized that schools with supportive environments and more experienced teachers would yield higher average test scores in both English and Algebra 2. In both of our models, however, chronic absenteeism was the only statistically significant predictor of a school’s average Regents exam score. In our model for the Algebra 2 Regents, teacher experience was also statistically significant.
+Our paper attempts to uncover the variables that affect a New York City public high school’s performance on the 2018 English and Algebra 2 Regents exams, a standardized test administered by New York State to high school students across the state. By combining two datasets published by the NYC Department of Education we were able to fit two separate models to answer our research question, one model for the average English scores, and a second model for the average Algebra 2 scores. Initially we hypothesized that schools with supportive environments and more experienced teachers would yield higher average test scores in both English and Algebra 2. However, in both of our models, school environment is not statistically significant, and the control variable chronic absenteeism is negatively associated with both Math and English scores. Also, in our model for the Algebra 2 Regents, teacher experience was statistically significant as well.
+
 
 ```{r, include=FALSE}
 library(tidyverse)
