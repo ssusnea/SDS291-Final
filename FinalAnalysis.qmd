@@ -219,7 +219,6 @@ plot2
 ```
 
 
-
 ## Model 2: English
 For our model predicting a school's average 2018 English Regents score only the coefficient estimate for chronic absenteeism was statistically significant and negatively associated with the dependent variable. As the percentage of chronic absenteeism within a student body increases, a school's average score for the 2018 English Regents decreases (see @fig-plot2). The other predictors included in this model were not statistically significant so our initial hypothesis that average English test scores have a relationship with teacher experience and a school's supportive environment was not supported by this model.
 
@@ -257,6 +256,10 @@ plot3 <- ggplot(data = pred_dataenglish, aes(x = chronically_absent, y = pred_pr
 plot3
 ```
 
+# Limitations
+New York City is highly segregated and as a result there are factors that affect a school's performance on standardized tests that begin before a student even steps foot in their school. In our research, we selected only four variables as predictor variables, omitting crucial factors such as a school's demographics and the amount of funding received which would certainly have impacted our results. This selective approach led to an oversimplification of our model, as we focused solely on students' performance measured by a school's average Algebra 2 and English Regents scores. While our model told us that attendance is the most important part of a school's success, as researchers we acknowledge that there is more going on behind the scenes. As a result, we caution readers against using our findings to make definitive claims about school performance. 
+
+Furthermore, it's essential to note that we combined two distinct data sets since our first data set only included students' exam scores from before entering high school. This merging of data sets introduces potential complexities and nuances that should be acknowledged in interpreting our findings. Since we observed skewed distributions for our independent variables and the models' residuals, we would also need to be careful about making any causal inferences based on our model. This problem can be addressed in the future by selecting data with more observations, and be more careful when selecting predictors. These adjustments can enhance the quality of our models and increase the accuracy of our findings.
 
 # Conclusion
 For this study, we would like to see whether a school's average Algebra 2 and English Regents scores are significantly associated with a school's supportive environment, teachers' teaching experience, the percentage of rigorous instruction, and students' absenteeism rates. 
@@ -265,12 +268,6 @@ Our analysis does not supports our primary hypothesis. In our initial model, whe
 
 Moving on to the second model, with the schools' average Algebra 2 Regents score as the dependent variable, we failed to reject the null hypothesis for both the. teacher experience and supportive environment predictors. However, we reject the null hypothesis for rigorous instruction and chronic absenteeism, indicating that there is a relationship between a school's average Algebra 2 Regents score and chronic absenteeism and rigorous teaching. We can successfully conclude that the chronically absent factor is statistically significant across both models.
 
-# Limitations
-In our research, we selected only four variables as predictor variables, omitting consideration of other potential factors such as school race composition and overall school quality that could have an impact on our results. This selective approach may have led to an oversimplification of our sample, as we focused solely on students' performance measured by a school's average Algebra 2 and English Regents scores. 
-
-Furthermore, it's essential to note that we combined two distinct data sets, since our first data set only included students' exam scores from before entering high school. This merging of data sets introduces potential complexities and nuances that should be acknowledged in interpreting our findings.
-
-Since we observed skewed distributions for both our variables and the models' residuals, we need to be very cautious about making any causal inferences based on our results since they are not technically valid. This problem can be addressed in the future by selecting data with more observations, and be more careful when selecting predictors. These adjustments can enhance the quality of our models and increase the accuracy of our findings.
 
 # Appendix
 
