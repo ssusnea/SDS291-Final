@@ -323,7 +323,8 @@ plot(lm_english, which = 1)
 plot(lm_english, which = 2)
 ## we noticed that these residuals are somewhat normally distributed 
 vif(lm_english)
-## vif looks fine although chronic absence has a vif of 3.36 and economic need and supportive environment have vif scores of 2 and 2.5 respectively
+## vif looks fine although chronic absence has a vif of 3.36 and economic need
+## and supportive environment have vif scores of 2 and 2.5 respectively
 
 #### LOOKING AT INDIVIDUAL VARIABLES (ENGLISH):
 ggplot(data = FinalData, aes(x = chronically_absent, y = mean_english)) + 
@@ -341,8 +342,8 @@ ggplot(data = FinalData, aes(x = rigorous_instruction, y = mean_english)) +
 ggplot(data = FinalData, aes(x = economic_need, y = mean_english)) + 
   geom_point() + geom_smooth() +
   ggtitle("Economic Need vs. Mean English")
-# chronically absent vs mean english looked somewhat linear, economic need vs mean english 
-# was linear. 
+# chronically absent vs mean english looked somewhat linear, economic need vs
+# mean english was linear.
 
 # wanted to see if transforming data would fix anything: 
 ggplot(data = FinalData, aes(x = log(chronically_absent), y = mean_english)) + 
@@ -370,7 +371,8 @@ plot(lm_math, which = 1)
 plot(lm_math, which = 2)
 ## this looks roughly normally distributed
 vif(lm_math)
-## vif looks fine although chronic absence has a 3.3 vif score and both economic need and supportive environment have vif over 2
+## vif looks fine although chronic absence has a 3.3 vif score and both economic
+## need and supportive environment have vif over 2
 
 #### LOOKING AT INDIVIDUAL VARIABLES (MATH):
 ggplot(data = FinalData, aes(x = chronically_absent, y = mean_algebra2)) + 
@@ -389,8 +391,8 @@ ggplot(data = FinalData, aes(x = economic_need, y = mean_algebra2)) +
   geom_point() + geom_smooth() +
   ggtitle("Economic Need vs. Mean Math")
 # chronically absent vs mean algebra2 was the only scatter plot to look remotely
-# linear. economic need vs mean algebra2 was mostly linear till the right most end 
-# where it became quadratic
+# linear. economic need vs mean algebra2 was mostly linear till the right most
+# end where it became quadratic
 
 # wanted to see if transforming data would fix anything:
 ggplot(data = FinalData, aes(x = log(chronically_absent), y = mean_algebra2)) + 
