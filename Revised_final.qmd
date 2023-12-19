@@ -1,0 +1,339 @@
+---
+title: "AA"
+subtitle: "SDS 291 Final Project"
+author: "Cindy Sun, Sarah Susnea, Elaine Xu"
+date: "December 10, 2023"
+format: 
+  pdf:
+    geometry: 
+      - left=1in
+      - right=1in
+      - top=1in
+      - bottom=1in
+bibliography: citations.bib
+---
+
+# Abstract
+Our paper attempts to uncover the variables that affect a New York City public high school’s performance on the 2018 English and Algebra 2 Regents exams, a standardized test administered by New York State to high school students across the state. By combining two datasets published by the NYC Department of Education we were able to fit two separate models to answer our research question, one model for the average English scores, and a second model for the average Algebra 2 scores. Initially we hypothesized that schools with supportive environments and more experienced teachers would yield higher average test scores in both English and Algebra 2. In both of our models, however, chronic absenteeism was the only statistically significant predictor of a school’s average Regents exam score. In our model for the Algebra 2 Regents, teacher experience was also statistically significant.
+
+```{r, include=FALSE}
+library(tidyverse)
+library(stargazer)
+library(car)
+
+#### DATA IMPORT/WRANGLING 
+
+# reading the csv:
+RegentsExams <- read.csv("regents_scores.csv")
+SchoolQualityReport <- read.csv("2017_2018_SchoolQualityReport.csv")
+
+
+# selecting the relevant variables from this data set.
+SchoolQuality_Selected <- SchoolQualityReport |> 
+  select(DBN, School.Name, Percent.of.teachers.with.3.or.more.years.of.experience, Percent.of.Students.Chronically.Absent, Rigorous.Instruction...Percent.Positive, Supportive.Environment.Rating, Economic.Need.Index)
+
+# changing one column name to make it easier to left join later
+colnames(SchoolQuality_Selected)[1] <- c("School.DBN")
+
+# filtering the RegentsExams data set 
+RegentsEdited <- RegentsExams |> 
+  select(2:10) |>
+  filter(School.Level == "High school", Year == "2018", School.Type == "General Academic")
+
+# filtering for only the two tests we are interested in
+RegentsEdited <- RegentsEdited |> 
+  filter(Regents.Exam == "Common Core Algebra2" | Regents.Exam == "Common Core English")
+
+
+# creating two new rows, one for the english scores one for the math scores
+RegentsEdited <- RegentsEdited |> 
+  pivot_wider(names_from = Regents.Exam,
+              values_from = Mean.Score)
+
+# changing the names to work for programming: 
+colnames(RegentsEdited)[8:9] <- c("Mean.Algebra2", "Mean.English")
+
+
+# creating a data frame that only contains Algebra2 observations
+Algebra2 <- RegentsEdited |> 
+  select(!9) |>
+  filter(Mean.Algebra2 != "s" & !is.na(Mean.Algebra2))
+
+English <- RegentsEdited |> 
+  select(School.DBN, Mean.English) |>
+  filter(Mean.English != "s" & !is.na(Mean.English))
+
+# joining the math and english exam data sets into final one 
+FinalRegents <- left_join(x = Algebra2, y = English, by = "School.DBN")
+
+
+# selecting only the minimum columns we are interested in
+Scores <- FinalRegents |> 
+  select(School.DBN, Mean.Algebra2, Mean.English)
+
+# left joining by School.DBN to get the final data frame we want to work with: 
+FinalData <- left_join(x = Scores, y = SchoolQuality_Selected, by = "School.DBN")
+
+# The test score columns were character vectors so we needed to coerce them to numeric vectors.
+FinalData$Mean.Algebra2 <- as.numeric(FinalData$Mean.Algebra2)
+FinalData$Mean.English <- as.numeric(FinalData$Mean.English)
+
+# need to re-code the column names to make them easier to code with
+names <- names(FinalData)
+snake <- snakecase::to_snake_case(names)
+colnames(FinalData) <- snake
+renamed <- c("school_dbn", "mean_algebra2", "mean_english", "school_name", "teacher_experience", "chronically_absent", "rigorous_instruction", "supportive_environment", "economic_need")
+colnames(FinalData) <- renamed
+
+# final data set is called FinalData
+```
+
+# Introduction
+
+Why do some students struggle in school? Numerous researchers have delved into the variables influencing students' performance in math and English literacy, which are found highly correlated [@klemer_relationships_2023]. One important factor could be the teacher’s teaching experience. @ladd_returns_2017 found that middle school teachers’ teaching experiences are positively correlated with students' achievements in math and reading. Another factor is the school's environment, whether supportive or discouraging, could also affect students’ mathematical learning and performance. A comprehensive review of literature spanning 771 studies from 2005 to 2014 found that key factors connecting deprivation to underperformance in math and sciences can be thematically grouped into a deficiency of positive environment and support [@banerjee_systematic_2016]. A more recent study also supported the idea, revealing a significant indirect association between perceived peer discrimination experiences and GPA through behavioral, and cognitive engagements [@griffin_school_2017].
+
+Building upon these findings, our aim is to extend this research to high school students and examine whether math test scores and standardized english test scores are significantly associated with the schools’ supportive environment and teachers’ teaching experiences. We want to explore whether math test scores are significantly associated with a school supportive environment and teachers’ teaching experience, after the effects of control variables, such as the percentage of rigorous instruction, and students' absenteeism rates, are accounted for. Subsequently, we want to test whether a similar relationship holds true for standardized English test scores. We first hypothesize that as the schools’ supportive environment and teachers’ teaching experiences(IV) increase, then math scores(DV) will increase.  Hypothesis 2: As the schools’ supportive environment and teachers’ teaching experiences(IV) increase, we also expect English scores(DV) to increase. To test these hypotheses, we will employ a multiple linear regression analysis.
+
+# Methods
+
+The data we are using for this project is collected by the New York City Department of Education and is published on the NYC Open Data portal. Our data is a combination of two data sets, one summarizing the survey responses from the Department of Education’s 2017 - 2018 School Quality Report and a second data set which reports the average Regents Exams scores for each public high school. Our unit of observation for our final data set is a New York City public high school that administered both the Algebra2 Regents and the English Regents in 2018. These high schools were not randomly selected and this data only covers the survey responses administered for one academic year, 2017 - 2018. We are interested in the following variables: the mean algebra 2 score, the mean english score, the percent of chronically absent students, the percent of teacher with 3 or more years of experience, the percentage of positive rigorous instruction rating, and the supportive environment rating. 
+
+We will utilize multiple regression to create two models with two different dependent variables. Our first model will use average math score as the dependent variable with supportive environment rating and teacher experience as our key independent variables and student attendance and rigorous instruction as our control variables. Our second model will use average English score as the dependent variable with supportive environment rating and teacher experience as our key independent variables and student attendance and rigorous instruction as our control variables. The goal of these models is to build off of the research done by @klemer_relationships_2023 by taking a closer look at the effect of the school environment and teacher experience on math and reading test scores. 
+
+
+```{r, echo=FALSE, results='asis'}
+# create the summary table
+stargazer(as.data.frame(FinalData), type = "latex", 
+          covariate.labels = c("Mean Algebra 2", 
+                               "Mean English", 
+                               "Teacher Experience",
+                               "Chronically Absent",
+                               "Rigorous Instruction",
+                               "Economic Need"), 
+                               header = F, float = F)
+```
+
+
+
+
+
+# Results
+```{r, include=FALSE}
+# fitting the english linear regression model: 
+lm_english <- lm(mean_english ~ teacher_experience + chronically_absent + rigorous_instruction + supportive_environment +economic_need, data = FinalData)
+
+# fitting the math linear regression model: 
+lm_math <- lm(mean_algebra2 ~ teacher_experience + chronically_absent + rigorous_instruction + supportive_environment+economic_need, data = FinalData)
+
+summary(lm_math)
+summary(lm_english)
+```
+
+```{r, echo=FALSE, results='asis'}
+# creating comparison table for models 
+stargazer(lm_math, lm_english,
+          type = "latex", 
+          title = "Comparing Our Models",
+          dep.var.labels = c("Mean Algebra 2 Score", "Mean English Score"), 
+          covariate.labels = c("Teacher Experience", 
+                               "Percent of Chronically Absent Students",
+                               "Rigorous Instruction",
+                               "Approaching Supportive Environment Target",
+                               "Exceeding Supportive Environment Target",
+                               "Meeting Supportive Environment Target",
+                               "Not Meeting Supportive Environment Target",
+                               "Intercept"),
+          header = F, 
+          float = F)
+```
+
+## Model 1: Math
+From the model predicting a school's average 2018 Algebra 2 Regents score, two statistically significant variables emerge as predictors of math test scores for a school. First, as hypothesized, teachers' teaching experience is positively associated with high school students' math scores. This implies that as teachers' experience increases, students' math scores also increase (check plot 1 below). However, the school's supportive environment, the other variable mentioned in our initial hypothesis, did not exhibit statistical significance in this model. We failed to provide evidence for an association between the school's supportive environment and students' math scores. Nevertheless, the coefficient for the control variable "chronic absence" is statistically significant. There is a negative association between chronic absence and students' math scores, indicating that as students' absences increase, their math scores decrease (check plot 2 below).
+
+The adjusted $R^2$ for this model is 46.5%, signifying that the model explains a moderate proportion of the variability in students' math scores, leaving room for improvement. The model's F-statistic is also statistically significant, indicating that it successfully reduces the unexplained variation in students' math scores by incorporating four different variables.
+
+```{r, include=FALSE}
+# filter the data to fit predictions for math and english
+cleaned <- FinalData |>
+  filter(!is.na(teacher_experience))
+```
+
+```{r,include=FALSE}
+# making predictions for math lm 
+pred_datamath_teacherexp <- with(cleaned, 
+                              data.frame(teacher_experience = seq(from = 0, to = .75, by = 0.025),
+                                         chronically_absent = mean(chronically_absent),
+                                         rigorous_instruction = mean(rigorous_instruction),
+                                         supportive_environment = "Meeting Target"))
+
+# generating predictions: 
+predictions_mth_teacherexp <- as.data.frame(predict(lm_math, pred_datamath_teacherexp, type = "response", se.fit = TRUE))
+
+# inserting the standard errors: 
+pred_datamath_teacherexp$pred_prob <- predictions_mth_teacherexp$fit
+pred_datamath_teacherexp$pred_lower <- predictions_mth_teacherexp$fit-(1.96*predictions_mth_teacherexp$se.fit)
+pred_datamath_teacherexp$pred_upper <- predictions_mth_teacherexp$fit+(1.96*predictions_mth_teacherexp$se.fit)
+```
+
+```{r, echo=FALSE}
+# plot for math vs. teacher experience
+ggplot(data = pred_datamath_teacherexp, aes(x = teacher_experience, y = pred_prob)) +
+  geom_ribbon(aes(ymin = pred_lower, ymax = pred_upper), fill = "blue", alpha = 0.50) +
+  geom_line() +
+  labs(title = "Plot 1: Teachers Experience vs. Math Score",
+       x = "Percentage of Teacher With 3+ Year Experience",
+       y = "Average Algebra 2 Regents Score") +
+  theme_minimal()
+```
+
+```{r,include=FALSE}
+# making predictions for math lm 
+pred_datamath_absence <- with(cleaned, 
+                              data.frame(teacher_experience = mean(teacher_experience),
+                                         chronically_absent = seq(from = 0, to = .75, by = 0.025),
+                                         rigorous_instruction = mean(rigorous_instruction),
+                                         supportive_environment = "Meeting Target"))
+
+# generating predictions: 
+predictions_mth_absence <- as.data.frame(predict(lm_math, pred_datamath_absence, type = "response", se.fit = TRUE))
+
+# inserting the standard errors: 
+pred_datamath_absence$pred_prob <- predictions_mth_absence$fit
+pred_datamath_absence$pred_lower <- predictions_mth_absence$fit-(1.96*predictions_mth_absence$se.fit)
+pred_datamath_absence$pred_upper <- predictions_mth_absence$fit+(1.96*predictions_mth_absence$se.fit)
+```
+
+```{r, echo=FALSE}
+# plot for math vs. chronically absent
+ggplot(data = pred_datamath_absence, aes(x = chronically_absent, y = pred_prob)) +
+  geom_ribbon(aes(ymin = pred_lower, ymax = pred_upper), fill = "blue", alpha = 0.50) +
+  geom_line() +
+  labs(title = "Plot 2: Chronic Absence Rate vs. Math Score",
+       x = "Chronic Absence Rate",
+       y = "Average Algebra 2 Regents Score") +
+  theme_minimal()
+```
+
+
+## Model 2: English
+For our model predicting a school's average 2018 English Regents score only the coefficient estimate for chronic absenteeism was statistically significant and negatively associated with the dependent variable. As the percentage of chronic absenteeism within a student body increases, a school's average score for the 2018 English Regents decreases (check plot 3 below). The other predictors included in this model were not statistically significant so our initial hypothesis that average English test scores have a relationship with teacher experience and a school's supportive environment was not supported by this model.
+
+Although our model did not support our hypothesis, it was moderately successful at explaining the variation in our dependent variable, producing an adjusted $R^2$ of $55.75$%. Additionally this model's F-stat was statistically significant meaning this model has explanatory power and managed to reduce the unexplained variability of our dependent variable. 
+
+```{r, include=FALSE}
+# making predictions for english lm 
+pred_dataenglish <- with(cleaned, 
+                         data.frame(teacher_experience = mean(teacher_experience),
+                                    chronically_absent = seq(from = 0, to = .75, by = 0.025),
+                                    rigorous_instruction = mean(rigorous_instruction),
+                                    supportive_environment = "Meeting Target"))
+
+# generating predictions: 
+predictions_eng <- as.data.frame(predict(lm_english, pred_dataenglish, type = "response", se.fit = TRUE))
+
+# inserting the standard errors: 
+pred_dataenglish$pred_prob <- predictions_eng$fit
+pred_dataenglish$pred_lower <- predictions_eng$fit-(1.96*predictions_eng$se.fit)
+pred_dataenglish$pred_upper <- predictions_eng$fit+(1.96*predictions_eng$se.fit)
+```
+
+```{r, echo=FALSE}
+ggplot(data = pred_dataenglish, aes(x = chronically_absent, y = pred_prob)) +
+  geom_ribbon(aes(ymin = pred_lower, ymax = pred_upper), fill = "red", alpha = 0.50) +
+  geom_line() + 
+  labs(title = "Plot 3: Chronic Absence Rate vs. English Score",
+       x = "Chronic Absence Rate",
+       y = "Average English Regents Score") +
+  theme_minimal()
+```
+
+
+# Conclusion
+For this study, we would like to see whether a school's average Algebra 2 and English Regents scores are significantly associated with a school's supportive environment, teachers' teaching experience, the percentage of rigorous instruction, and students' absenteeism rates. 
+
+Our analysis does not supports our primary hypothesis. In our initial model, where the dependent variable is a school's average English Regents score, we failed to reject the null hypothesis for all independent variables except the factor of chronic absenteeism. This indicates there is a significant relationship between the average English Regents score in schools and the percentage of students experiencing chronic absenteeism.
+
+Moving on to the second model, with the schools' average Algebra 2 Regents score as the dependent variable, we failed to reject the null hypothesis for both the. teacher experience and supportive environment predictors. However, we reject the null hypothesis for rigorous instruction and chronic absenteeism, indicating that there is a relationship between a school's average Algebra 2 Regents score and chronic absenteeism and rigorous teaching. We can successfully conclude that the chronically absent factor is statistically significant across both models.
+
+# Limitations
+In our research, we selected only four variables as predictor variables, omitting consideration of other potential factors such as school race composition and overall school quality that could have an impact on our results. This selective approach may have led to an oversimplification of our sample, as we focused solely on students' performance measured by a school's average Algebra 2 and English Regents scores. 
+
+Furthermore, it's essential to note that we combined two distinct data sets, since our first data set only included students' exam scores from before entering high school. This merging of data sets introduces potential complexities and nuances that should be acknowledged in interpreting our findings.
+
+Since we also failed to pass the initial regression conditions we need to be very cautious about making any causal inferences based on our results since they are not technically valid. This problem can be addressed in the future by selecting data with more observations, and be more careful when selecting predictors. These adjustments can enhance the quality of our models and increase the accuracy of our findings.
+
+# Appendix
+
+```{r, eval=FALSE}
+#### CONDITION CHECKS/INITIAL INVESTIGATION FOR ENGLISH MODEL: 
+
+summary(lm_english)
+# for model 1 we noticed that only the intercept and the variable chronically_absent are statistically significant.
+
+# condition checks: 
+plot(lm_english, which = 1)
+## 
+plot(lm_english, which = 2)
+## we noticed that these residuals are not normally distributed 
+vif(lm_english)
+# 
+
+#### LOOKING AT INDIVIDUAL VARIABLES (ENGLISH):
+ggplot(data = FinalData, aes(x = chronically_absent, y = mean_english)) + geom_point() + geom_smooth() +
+  ggtitle("Chronically Absent vs. Mean English")
+
+ggplot(data = FinalData, aes(x = teacher_experience, y = mean_english)) + geom_point() + geom_smooth() +
+  ggtitle("Teacher Experience vs. Mean English")
+
+ggplot(data = FinalData, aes(x = rigorous_instruction, y = mean_english)) + geom_point() + geom_smooth() +
+  ggtitle("Rigorous Instruction vs. Mean English")
+# chronically absent vs mean english was the only scatter plot to look remotely linear. 
+
+# wanted to see if transforming data would fix anything: 
+ggplot(data = FinalData, aes(x = log(chronically_absent), y = mean_english)) + geom_point() + geom_smooth() +
+  ggtitle("Log Chronically Absent vs. Mean English")
+ggplot(data = FinalData, aes(x = log(teacher_experience), y = mean_english)) + geom_point() + geom_smooth() +
+  ggtitle("Log Teacher Experience vs. Mean English")
+ggplot(data = FinalData, aes(x = log(rigorous_instruction), y = mean_english)) + geom_point() + geom_smooth() +
+  ggtitle("Log Rigorous Instruction vs. Mean English")
+# noticed that applying log to the variables only makes them more skewed, so we kept variables unchanged. 
+
+
+#### CONDITION CHECKS/INITIAL INVESTIGATION FOR MATH MODEL: 
+
+summary(lm_math)
+# for model 2 we noticed that the intercept, teacher_experience, and chronically_absent were statistically significant. 
+
+# condition checks: 
+plot(lm_math, which = 1)
+## 
+plot(lm_math, which = 2)
+## we noticed that these residuals are not normally distributed
+vif(lm_math)
+## 
+
+#### LOOKING AT INDIVIDUAL VARIABLES (MATH):
+ggplot(data = FinalData, aes(x = chronically_absent, y = mean_algebra2)) + geom_point() + geom_smooth() +
+  ggtitle("Chronically Absent vs. Mean Math")
+
+ggplot(data = FinalData, aes(x = teacher_experience, y = mean_algebra2)) + geom_point() + geom_smooth() +
+  ggtitle("Teacher Experience vs. Mean Math")
+
+ggplot(data = FinalData, aes(x = rigorous_instruction, y = mean_algebra2)) + geom_point() + geom_smooth() +
+  ggtitle("Rigorous Instruction vs. Mean Math")
+# chronically absent vs mean algebra2 was the only scatter plot to look remotely linear. 
+
+# wanted to see if transforming data would fix anything:
+ggplot(data = FinalData, aes(x = log(chronically_absent), y = mean_algebra2)) + geom_point() + geom_smooth() +
+  ggtitle("Log Chronically Absent vs. Mean Math")
+ggplot(data = FinalData, aes(x = log(teacher_experience), y = mean_algebra2)) + geom_point() + geom_smooth() +
+  ggtitle("Log Teacher Experience vs. Mean Math")
+ggplot(data = FinalData, aes(x = log(rigorous_instruction), y = mean_algebra2)) + geom_point() + geom_smooth() +
+  ggtitle("Log Rigorous Instruction vs. Mean Math")
+# noticed that applying log to the variables only makes them more skewed, so we kept variables unchanged. 
+```
+
+
+
+# Bibliography
+
