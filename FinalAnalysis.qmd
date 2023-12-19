@@ -145,11 +145,11 @@ stargazer(lm_math, lm_english,
 ```
 
 ## Model 1: Math
-From the model predicting a school's average 2018 Algebra 2 Regents score, two statistically significant variables emerge as predictors of math test scores for a school. 
+From the model predicting a school's average 2018 Algebra 2 Regents score, three statistically significant variables emerge as predictors of math test scores for a school.
 
-First, economic need is negatively associated with a school's average Algebra 2 Regents score. This implies that as the percentage of students with economic need increases, students' math scores decrease (see @fig-plot1 (a)). However, the school's supportive environment, the other variable mentioned in our initial hypothesis, did not exhibit statistical significance in this model. We failed to provide evidence for an association between the school's supportive environment and students' math scores. Nevertheless, the coefficient for the control variable "chronic absence" is also statistically significant. There is a negative association between chronic absence and students' math scores, indicating that as students' absences increase, their math scores decrease (see @fig-plot1 (b)).
+One key variable mentioned in our initial hypothesis, teacher experience, was found statistically significant, which is positively associated with the schools' average math scores. However, the school's supportive environment, the other variable mentioned in our initial hypothesis, did not exhibit statistical significance in this model. We failed to provide evidence for an association between the school's supportive environment and math scores. Nevertheless, the coefficients for the control variables "chronic absence" and "economic need" are even more statistically significant (with even smaller p-values) than our key variables. Both economic need and chronic absence have a negative association with math scores (see @fig-plot1). 
 
-The adjusted $R^2$ for this model is $47.7$%, signifying that the model explains a moderate proportion of the variability in students' math scores, leaving room for improvement. The model's F-statistic is also statistically significant, indicating that it successfully reduces the unexplained variation in students' math scores by incorporating four different variables.
+The adjusted $R^2$ for this model is $47.7$%, signifying that the model explains a moderate proportion of the variability in math scores, leaving room for improvement. The model's F-statistic is also statistically significant, indicating that it successfully reduces the unexplained variation in math scores by incorporating four different variables.
 
 ```{r, include=FALSE}
 # filter the data to fit predictions for math and english
@@ -224,7 +224,7 @@ plot2
 
 
 ## Model 2: English
-For our model predicting a school's average 2018 English Regents score three of our predictors were statistically significant: chronic absenteeism, economic need, and rigorous instruction. Both chronic absenteeism and economic need have a negative relationship with a school's average score for the 2018 English Regents (see @fig-plot2) while rigorous instruction has a positive relationship. The other predictors included in this model were not statistically significant, so our initial hypothesis that average English test scores have a relationship with teacher experience as well as a school's supportive environment was not supported by this model.
+For our model predicting a school's average 2018 English Regents score, non of our key variables (teacher experience and school's supportive environment) are statistically significant, so our initial hypothesis that average English test scores have a relationship with teacher experience as well as a school's supportive environment was not supported by this model. However, three of our control variables (chronic absenteeism, economic need, and rigorous instruction) were statistically significant. Both chronic absenteeism and economic need have a negative relationship with a school's average score for the 2018 English Regents (see @fig-plot2) while rigorous instruction has a positive relationship.
 
 Although our model did not support our hypothesis, it was moderately successful at explaining the variation in our dependent variable, producing an adjusted $R^2$ of $67.39$%. Additionally this model's F-stat was statistically significant meaning this model has explanatory power and managed to reduce the unexplained variability of our dependent variable. 
 
